@@ -2,7 +2,7 @@
 /* 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
- * Author: Kevin Thant
+ * Author: Kevin Thant (2014)
  */
 class BlazerFTP {
     const ACTIVE_MODE = 1;
