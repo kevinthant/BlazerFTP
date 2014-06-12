@@ -95,6 +95,10 @@ class BlazerFTP {
 
     public function sync($localDir, $remoteDir, $remoteDirCloned = null) {
 
+        if(!is_dir($localDir)){
+            throw new Exception(sprintf('Invalid local directory given: %s', $localDir));
+        }
+        
         $treeA = self::buildHashTree($localDir);
 
         if (!empty($remoteDirCloned) && is_dir($remoteDirCloned)) {
@@ -110,8 +114,6 @@ class BlazerFTP {
 
 
             if (!@ftp_get($this->_conn, $hashFile, $remoteDir .'/BlazerFTP.json', FTP_BINARY)) {
-                echo "No hash file existed on remote server\n";
-                
                 $this->uploadDirectory($localDir, $remoteDir, true);
                 file_put_contents($hashFile, json_encode($treeA));
                 ftp_put($this->_conn, $remoteDir .'/BlazerFTP.json', $hashFile, FTP_BINARY);
@@ -128,9 +130,10 @@ class BlazerFTP {
                 return;
             }
           
+            unlink($hashFile);
         }
 
-
+       
 
         $tasks = array();
         $branchQue = array(DIRECTORY_SEPARATOR);
@@ -178,7 +181,12 @@ class BlazerFTP {
         }
 
         $this->_processSyncTasks($tasks, $localDir, $remoteDir);
-       
+        
+        //Update the remote with new hash file
+        $newHashFile =  tempnam($this->_tmpDir, 'BlazerFTP_');
+        file_put_contents($newHashFile, json_encode($treeA));
+        ftp_put($this->_conn, $remoteDir .'/BlazerFTP.json', $newHashFile, FTP_BINARY);
+        
     }
 
     public static function buildHashFlat($localDir, $recursive = true, $ignoreList = array('.', '..', '.svn', '.git')) {
@@ -328,7 +336,7 @@ class BlazerFTP {
                    break;
                
                case 'D':
-                   $this->_syncDelete($filename, $localDir, $remoteDir);
+                   $this->_syncDelete($filename, $remoteDir);
                    break;
            }
        }
@@ -352,13 +360,13 @@ class BlazerFTP {
     function _syncUpload($filename, $localDir, $remoteDir){
         
         $localFile = $localDir . $filename;
-        $remoteFile = $remoteDir . $filename;
+        $remoteFile = $remoteDir . str_replace('\\', '/', $filename);
         
         if(is_file($localFile)){
             if($this->_isFtpDir($remoteFile)){
                 $this->_ftpRecursiveDelete($remoteFile);
             }
-            ftp_put($this->_con, $remoteFile, $localFile, $this->_transferMode);
+            ftp_put($this->_conn, $remoteFile, $localFile, $this->_transferMode);
         }
         else if(is_dir($localDir . $filename)){
             if(!$this->_isFtpDir($remoteFile)){
@@ -368,13 +376,23 @@ class BlazerFTP {
                 $this->_ftpRecursiveDelete($remoteFile);
             }
         }
+        
+        $this->_ftpUploadAll($localFile, $remoteFile);
     }
     
-    function _syncDelete($filename, $localDir, $remoteDir){
+    function _syncDelete($filename, $remoteDir){
         
+        $remoteFile = $remoteDir . $filename;
+        $this->_ftpRecursiveDelete($remoteFile);
     }
     
     function _ftpUploadAll($src_dir, $dst_dir) {
+        
+        if(is_file($src_dir)){
+            ftp_put($this->_conn, $dst_dir, $src_dir, $this->_transferMode);
+            return;
+        }
+        
         $d = dir($src_dir);
         while ($file = $d->read()) { // do this for each file in the directory
             if ($file != "." && $file != "..") { // to prevent an infinite loop
@@ -402,11 +420,9 @@ class BlazerFTP {
             # loop through the file list and recursively delete the FILE in the list
             foreach($filelist as $file) {  
                 if($file === '.' || $file === '..') continue;
-                echo "deleting ". $file . "\n";
                 $this->_ftpRecursiveDelete($directory . '/' . $file);   
             }
             $this->_ftpRecursiveDelete($directory);
         }
     }
-
 }

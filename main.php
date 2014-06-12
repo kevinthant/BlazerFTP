@@ -23,4 +23,4 @@ print_r($output); */
 $ftp = new BlazerFTP('93.188.160.80', 'u516621118', 'blazer123');
 
 //$ftp->sync('C:\wamp\www\dummyA', null, 'C:\wamp\www\dummyB');
-$ftp->sync('C:\Users\kthant\Documents\GitHub\lawfirm', '/public_html');
+$ftp->sync('C:\Users\Kevin\Documents\GitHub\lawfirm', '/public_html');
