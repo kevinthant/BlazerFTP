@@ -327,7 +327,7 @@ class BlazerFTP {
     }
 
     private function _processSyncTasks(array $tasks, $localDir, $remoteDir){
-       
+       var_dump($tasks);
        foreach($tasks as $filename => $action){
            switch($action){
                case 'A':
@@ -336,7 +336,7 @@ class BlazerFTP {
                    break;
                
                case 'D':
-                   $this->_syncDelete($filename, $remoteDir);
+                   $this->_syncDelete($filename, $localDir, $remoteDir);
                    break;
            }
        }
@@ -380,9 +380,9 @@ class BlazerFTP {
         $this->_ftpUploadAll($localFile, $remoteFile);
     }
     
-    function _syncDelete($filename, $remoteDir){
+    function _syncDelete($filename, $localDir, $remoteDir){
         
-        $remoteFile = $remoteDir . $filename;
+        $remoteFile = $remoteDir . str_replace('\\', '/', $filename);
         $this->_ftpRecursiveDelete($remoteFile);
     }
     
