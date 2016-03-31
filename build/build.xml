@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="USConnect" default="dist">
+<project name="BlazerFTP" default="dist">
 
     <!-- ============================================  -->
     <!-- Target: prepare                               -->
