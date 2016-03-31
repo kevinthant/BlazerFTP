@@ -48,10 +48,10 @@
         <delete dir="/usr/share/nginx/projects/blazer-ftp/master" includeemptydirs="true" verbose="false" failonerror="false" />
         <!-- copying the code coverage file -->
         <mkdir dir="/usr/share/nginx/projects/blazer-ftp/master/code-coverage" />
-        <move file="./output/code-coverage" todir="/usr/share/nginx/projects/blazer-ftp/master/code-coverage" includeemptydirs="true" overwrite="true" />
+        <move file="./output/code-coverage" todir="/usr/share/nginx/projects/blazer-ftp/master" includeemptydirs="true" overwrite="true" />
         
         <mkdir dir="/usr/share/nginx/projects/blazer-ftp/master/unit-test" />
-        <move file="./output/unit-test" todir="/usr/share/nginx/projects/blazer-ftp/master/unit-test" includeemptydirs="true" overwrite="true" />
+        <move file="./output/unit-test" todir="/usr/share/nginx/projects/blazer-ftp/master" includeemptydirs="true" overwrite="true" />
     </target>
     <!-- ============================================  -->
     <!-- (DEFAULT)  Target: dist                       -->
