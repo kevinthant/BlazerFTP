@@ -46,7 +46,7 @@
     
     <target name="jenkins-build" depends="build">
         <delete dir="/usr/share/nginx/projects/blazer-ftp/master" includeemptydirs="true" verbose="false" failonerror="false" />
-       
+        <!-- copying the code coverage file -->
         <mkdir dir="/usr/share/nginx/projects/blazer-ftp/master/code-coverage" />
         <move file="./output/code-coverage" todir="/usr/share/nginx/projects/blazer-ftp/master/code-coverage" includeemptydirs="true" overwrite="true" />
         
