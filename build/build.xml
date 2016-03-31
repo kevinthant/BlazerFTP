@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="USConnect" default="dist">
+
+    <!-- ============================================  -->
+    <!-- Target: prepare                               -->
+    <!-- ============================================  -->
+    <target name="prepare">
+        <echo msg="Preparing for build output" />
+    
+        <delete dir="./output/code-coverage" includeemptydirs="true" verbose="false" failonerror="false" />
+        <delete dir="./output/unit-test" includeemptydirs="true" verbose="false" failonerror="false" />
+        <mkdir dir="./output/code-coverage" />
+        <mkdir dir="./output/unit-test" />
+    </target>
+
+    <!-- ============================================  -->
+    <!-- Target: build                                 -->
+    <!-- ============================================  -->
+    <target name="build" depends="prepare">
+        <!-- Building Peta library -->
+        <coverage-setup database="./output/codecoverage">
+            <fileset dir="./../test">
+              <include name="**/*.php"/>
+              <exclude name="*Test.php"/>
+            </fileset>
+       </coverage-setup>
+       <phpunit bootstrap="./../test/bootstrap.php" codecoverage="true">
+            <formatter todir="./output" type="xml"/>
+            <batchtest>
+              <fileset dir="./../test">
+                <include name="**/*Test*.php"/>
+              </fileset>
+            </batchtest>
+        </phpunit>
+		
+        <coverage-report outfile="./output/coverage.xml">
+            <report styledir="./../vendor/phing/phing/etc" 
+                    todir="./output/code-coverage"/>
+        </coverage-report>
+        <phpunitreport infile="./output/testsuites.xml"
+                  styledir="./../vendor/phing/phing/etc"
+                  format="noframes"
+                  todir="./output/unit-test"/>
+        <move file="./output/unit-test/phpunit-noframes.html" tofile="./output/unit-test/index.html" overwrite="true"/>
+    </target>
+    
+    <target name="jenkins-build" depends="build">
+       
+    </target>
+    <!-- ============================================  -->
+    <!-- (DEFAULT)  Target: dist                       -->
+    <!-- ============================================  -->
+    <target name="dist" depends="build">
+       
+        <!--
+        <echo msg="Creating archive..." />
+
+        <tar destfile="./build/build.tar.gz" compression="gzip">
+            <fileset dir="./build">
+                <include name="*" />
+            </fileset>
+        </tar>
+
+        <echo msg="Files copied and compressed in build directory OK!" /> -->
+    </target>
+</project>
