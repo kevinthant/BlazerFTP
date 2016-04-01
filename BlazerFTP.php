@@ -1,8 +1,7 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * FTP class for uploading faster 
  * Author: Kevin Thant (2014)
  */
 
@@ -19,6 +18,15 @@ class BlazerFTP {
     private $_transferMode = FTP_BINARY;
     private $_conn = null;
 
+    /**
+     * Constructor
+     * @param string $host
+     * @param string $username
+     * @param string $pass
+     * @param int $mode
+     * @param int $transferMode
+     * @param string $tmpDir
+     */
     public function __construct($host, $username, $pass, $mode = BlazerFTP::PASSIVE_MODE, $transferMode = FTP_BINARY, $tmpDir = null) {
         $this->_host = $host;
         $this->_username = $username;
